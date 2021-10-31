@@ -1,10 +1,12 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
 const app = express();
- 
-require('./src/Routes/index')(app)
+require('dotenv').config();
+
+app.use(express.json());
 app.use(cors());
 app.use(express.json());
-app.listen(3333);
 
+app.listen(process.env.APP_PORT);
+
+require('./src/routes/index')(app)
