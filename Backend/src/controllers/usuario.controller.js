@@ -7,9 +7,15 @@ exports.login = async (req, res) => {
   try {
     const { nome, senha } = req.body;
     
-    const usuario = await Usuario.scope('login').findOne({
+    const dados = await Usuario.scope('login').findOne({
       where: { nome }
     });
+
+    const { senha: senhaUsuario } = dados;
+    const usuario = {
+      id: dados.id,
+      nome: dados.nome,
+    };
 
     if(!usuario) {
       return res.status(401).send({
@@ -18,7 +24,7 @@ exports.login = async (req, res) => {
     }
     
 
-    const isValid = compareToHash(senha, usuario.senha);
+    const isValid = compareToHash(senha, senhaUsuario);
 
     if(!isValid) {
       return res.status(401).send({
@@ -55,14 +61,22 @@ exports.create = async (req, res) => {
       senha
     });
 
+    const { id } = usuario;
+
     const token = jwt.sign({
-      id: usuario.id,
+      id,
       nome,
     }, process.env.SECRET, {
       expiresIn: '14d'
     });
     
-    res.status(200).send({usuario, token});
+    res.status(200).send({
+      usuario: {
+        id,
+        nome
+      },
+      token
+    });
   } catch (error) {
     res.status(500).send({
       message: error.message
