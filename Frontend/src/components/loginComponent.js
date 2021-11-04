@@ -34,7 +34,7 @@ export const LoginComponent = ({
                     >
                         <input
                             type="text"
-                            placeholder="Username"
+                            placeholder="Nome de usuário"
                             value={username}
                             onChange={e => setUsername(e.target.value)}
                             minLength={4}
@@ -60,7 +60,7 @@ export const LoginComponent = ({
                     >
                         <input
                             type="password"
-                            placeholder="Password"
+                            placeholder="Senha"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             minLength={4}
@@ -88,7 +88,7 @@ export const LoginComponent = ({
                             >
                                 <input
                                     type="password"
-                                    placeholder="Confirm password"
+                                    placeholder="Insira a senha novamente"
                                     value={passwordConfirmed}
                                     onChange={e => setPasswordConfirmed(e.target.value)}
                                     minLength={4}
@@ -130,13 +130,13 @@ export const LoginComponent = ({
                     disabled={!validateInputs()}
                 >
                     {
-                        isLogin ? "Login" : "Register"
+                        isLogin ? "Entrar" : "Cadastrar"
                     }
                 </button>
 
                 <div>
                     {
-                        isLogin ? "Don't have an account? " : "Already has an account? "
+                        isLogin ? "Não possui uma conta ? " : "Já possui uma conta ? "
                     }
                     <a
                         href="/#"
@@ -148,7 +148,7 @@ export const LoginComponent = ({
                             setOnTouchedConfPassword(false)
                         }}>
                         {
-                            isLogin ? "Register" : "Login"
+                            isLogin ? "Cadastro" : "Entrar"
                         }
                     </a>
                 </div>
