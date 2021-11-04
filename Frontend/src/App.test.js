@@ -1,8 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('Deve possuir o texto de cadastro', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const input = screen.getByText('Don\'t have an account?');
+  expect(input).toBeInTheDocument();
+});
+
+test('Deve possuir o link para registro', () => {
+  render(<App />);
+  const input = screen.getByText('Register');
+  expect(input).toBeInTheDocument();
 });
