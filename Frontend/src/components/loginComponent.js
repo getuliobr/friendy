@@ -148,7 +148,7 @@ export const LoginComponent = ({
                             setOnTouchedConfPassword(false)
                         }}>
                         {
-                            isLogin ? "Cadastro" : "Entrar"
+                            isLogin ? "Cadastrar-se" : "Entrar"
                         }
                     </a>
                 </div>
