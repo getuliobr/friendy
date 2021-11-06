@@ -1,35 +1,40 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { LoginComponent } from "../../components/loginComponent";
+import Cookies from "universal-cookie";
+import { toast } from 'react-toastify'
 
 export const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirmed, setPasswordConfirmed] = useState("");
 
+    const cookie = new Cookies();
+
     const handleLogin = async () => {
         try {
-            const response = await axios.post("http://www.api.com", { 
-                username,
-                password
+            const { data: { token, usuario: { id, nome } } } = await axios.post("http://localhost:3333/usuario/login", {
+                nome: username,
+                senha: password
             })
-        } catch(e) {
-            console.log(e)
+            cookie.set("token", token)
+        } catch (e) {
+            toast.error("Erro ao logar.")
         }
     }
 
     const handleRegister = async () => {
         try {
-            const response = await axios.post("http://www.api.com", { 
-                username,
-                password,
-                passwordConfirmed
-            }) 
-        } catch(e) {
-            console.log(e)
+            const { data: { token, usuario: { id, nome } } } = await axios.post("http://localhost:3333/usuario/cadastrar", {
+                nome: username,
+                senha: password
+            })
+            cookie.set("token", token)
+        } catch (e) {
+            toast.error("Erro ao cadastrar.")
         }
     }
-    
+
     return (
         <LoginComponent
             username={username}
