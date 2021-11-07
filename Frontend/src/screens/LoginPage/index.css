@@ -15,6 +15,9 @@ a {
 a:hover {
     color: grey;
 }
+.changeLogin:hover {
+    cursor: pointer;
+}
 
 .login {
     display: flex;
@@ -28,7 +31,7 @@ a:hover {
     align-items: center;
 }
 
-.inputs {
+input {
     display: flex;
     flex-direction: column;
 }
