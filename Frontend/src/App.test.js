@@ -3,12 +3,12 @@ import App from './App';
 
 test('Deve possuir o texto de cadastro', () => {
   render(<App />);
-  const input = screen.getByText('Don\'t have an account?');
+  const input = screen.getByText('Não possui uma conta ?');
   expect(input).toBeInTheDocument();
 });
 
-test('Deve possuir o link para registro', () => {
+test('Deve possuir o texto para registro', () => {
   render(<App />);
-  const input = screen.getByText('Register');
+  const input = screen.getByText('Cadastrar-se');
   expect(input).toBeInTheDocument();
 });
