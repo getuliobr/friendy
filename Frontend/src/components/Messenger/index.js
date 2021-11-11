@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import Message from './Message';
 import useDidMountAndUpdate from '../../hooks/use-did-mount-and-update';
 import './Messenger.css';
-import useAsync from '../../hooks/use-async';
 
 const Messenger = () => {
     const [currentTalk, setCurrentTalk] = useState(null);
