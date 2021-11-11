@@ -1,0 +1,160 @@
+const app = require('./app');
+const request = require('supertest');
+const Usuario = require('./src/models/usuario.model');
+
+describe('Teste da API', () => {
+  test('Deve retornar status code 200', async () => {
+    await request(app).get('/').expect(200);
+  });
+});
+
+describe('Testes cadastro usuário', () => {
+  beforeAll(async () => {
+    await Usuario.destroy({ where: {} });
+  });
+
+  test('Deve criar e retornar um usuario', async () => {
+    await request(app)
+      .post('/usuario/cadastrar')
+      .send({
+        nome: 'friendy',
+        senha: '123456',
+      })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then((res) => {
+        const { body } = res;
+        const { usuario } = body;
+        expect(usuario.nome).toBe('friendy');
+        expect(body.token).toBeDefined();
+      });
+  });
+
+  test('Não deve criar um usuario com mesmo nome', async () => {
+    await request(app)
+      .post('/usuario/cadastrar')
+      .send({
+        nome: 'friendy',
+        senha: '123456',
+      })
+      .expect(403);
+  });
+
+  test('Não deve criar uma conta sem senha', async () => {
+    await request(app)
+      .post('/usuario/cadastrar')
+      .send({
+        nome: 'semsenha',
+      })
+      .expect(500);
+  });
+
+  test('Não deve criar uma conta sem nome', async () => {
+    await request(app)
+      .post('/usuario/cadastrar')
+      .send({
+        senha: '123456',
+      })
+      .expect(500);
+  });
+});
+
+describe('Testes login usuário', () => {
+  let usuarioCriado;
+  beforeAll(async () => {
+    await Usuario.destroy({ where: {} });
+    usuarioCriado = await Usuario.create({
+      nome: 'friendy',
+      senha: '123456',
+    });
+  });
+
+  test('Deve ser possivel logar em um usuário com a senha e nome correto', async () => {
+    await request(app)
+      .post('/usuario/login')
+      .send({
+        nome: 'friendy',
+        senha: '123456',
+      })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then((res) => {
+        const { body } = res;
+        const { usuario } = body;
+        expect(usuario.nome).toBe(usuarioCriado.nome);
+        expect(usuario.id).toBe(usuarioCriado.id);
+        expect(body.token).toBeDefined();
+      });
+  });
+
+  test('Não deve ser possivel logar em um usuário com a senha incorreta', async () => {
+    await request(app)
+      .post('/usuario/login')
+      .send({
+        nome: 'friendy',
+        senha: '1234567',
+      })
+      .expect(401);
+  });
+
+  test('Não deve ser possivel logar em um usuário não cadastrado', async () => {
+    await request(app)
+      .post('/usuario/login')
+      .send({
+        nome: 'friendi',
+        senha: '123456',
+      })
+      .expect(401);
+  });
+});
+
+describe('Testes listar usuários', () => {
+  let usuariosCriados = [];
+  beforeAll(async () => {
+    await Usuario.destroy({ where: {} });
+    const promises = [];
+    for(let i = 0; i < 10; i++) {
+      promises.push(
+        Usuario.create({
+          nome: `friendy${i}`,
+          senha: '123456',
+        })
+      );
+    };
+    usuariosCriados = await Promise.all(promises);
+  });
+
+  test('Deve retornar todos os usuários cadastrados', async () => {
+    await request(app)
+      .get('/usuario')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then((res) => {
+        const { body: usuarios } = res;
+        expect(usuarios.length).toBe(10);
+        for(const usuario of usuarios) {
+          expect(usuariosCriados.map(u => u.id)).toContain(usuario.id);
+          expect(usuario.senha).toBe(undefined);
+        }
+      });
+  });
+
+  test('Deve ser possivel buscar os dados de um usuário pelo o ID', async () => {
+    const promises = [];
+    for(const usuarioDB of usuariosCriados) {
+      promises.push(
+        request(app)
+          .get(`/usuario/${usuarioDB.id}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .then((res) => {
+            const { body: usuario } = res;
+            expect(usuario.id).toBe(usuarioDB.id);
+            expect(usuario.nome).toBe(usuarioDB.nome);
+            expect(usuario.senha).toBe(undefined);
+          })
+      );
+    };
+    await Promise.all(promises);
+  });
+});

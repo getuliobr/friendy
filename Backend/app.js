@@ -10,3 +10,5 @@ app.use(express.json());
 app.listen(process.env.APP_PORT);
 
 require('./src/routes/index')(app)
+
+module.exports = app;

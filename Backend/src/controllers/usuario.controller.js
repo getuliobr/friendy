@@ -11,18 +11,18 @@ exports.login = async (req, res) => {
       where: { nome }
     });
 
+    if(!dados) {
+      return res.status(401).send({
+        message: 'Usuário ou senha incorretos/não existem!'
+      });
+    }
+    
     const { senha: senhaUsuario } = dados;
     const usuario = {
       id: dados.id,
       nome: dados.nome,
     };
 
-    if(!usuario) {
-      return res.status(401).send({
-        message: 'Usuário ou senha incorretos/não existem!'
-      });
-    }
-    
 
     const isValid = compareToHash(senha, senhaUsuario);
 
@@ -55,6 +55,16 @@ exports.login = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const { nome, senha } = req.body;
+
+    const nomeNaoDisponivel = await Usuario.findOne({
+      where: { nome }
+    });
+
+    if(nomeNaoDisponivel) {
+      return res.status(403).send({
+        message: 'Nome de usuário indisponível!'
+      });
+    }
 
     const usuario = await Usuario.create({
       nome,
