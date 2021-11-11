@@ -14,21 +14,31 @@ const Mensagem = database.define('mensagem', {
             allowNull: false,
             field: "conversa_id",
         },
-        destinatario: {
+        remetenteId: {
             type: Sequelize.UUID,
             allowNull: false,
-            field: "destinatario",
+            field: "remetente_id",
+        },
+        remetenteNome: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            field: "remetente_nome",
         },
         texto: {
             type: Sequelize.STRING,
             allowNull: false,
             field: "texto",
         },
+        createdAt: {
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.NOW,
+            field: 'created_at',
+        },
     },
     {
         tableName: 'mensagem',
         timestamps: false,
-        createdAt: false,
+        createdAt: true,
         scopes: {
             mensagem: {
               attributes: {},

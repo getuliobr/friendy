@@ -16,29 +16,26 @@
 .chatTop {
     height: 100%;
     overflow-y: scroll;
+    background-color: brown;
 }
 
 .chatMessageInput {
-    width: 70%;
-    height: 15px;
-    padding: 10px;
-    line-height: 1.5;
-    margin-left: 8px;
-    margin-bottom: 8px;
+    height: 40px;
+    width: 80%;
 }
 
 .chatSubmitButton {
-    width: 70px;
-    height: 40px;
     border: none;
     border-radius: 5px;
+    margin-right: 15px;
     cursor: pointer;
     background-color: blueviolet;
     color: white;
 }
 
 .chatBottom {
-    margin-top: 5px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;

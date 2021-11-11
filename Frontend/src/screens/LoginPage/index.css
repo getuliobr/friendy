@@ -13,7 +13,7 @@ a {
 }
 
 a:hover {
-    color: grey;
+    color: grey !important;;
 }
 .changeLogin:hover {
     cursor: pointer;
@@ -46,4 +46,9 @@ input {
     padding: 2.5%;
     margin-top: 0.5em;
     margin-bottom: 0.7em;
+}
+
+.spinner {
+    margin-top: 8px;
+    margin-bottom: 8px;
 }

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import { Button, Spinner } from "react-bootstrap";
 import "./../screens/LoginPage/index.css"
 
 export const LoginComponent = ({
     username, setUsername,
     password, setPassword,
     passwordConfirmed, setPasswordConfirmed,
-    handleLogin, handleRegister
+    handleLogin, handleRegister, loading
 }) => {
     const validateInputs = () => {
         if (isLogin)
@@ -25,6 +26,12 @@ export const LoginComponent = ({
             <div className="loginContainer">
 
                 <h1>FRIENDY</h1>
+                
+                { loading ? (
+                    <div className="spinner">
+                        <Spinner animation="border" role="status" />
+                    </div>
+                ) : null}
 
                 <div className="inputs">
                     <div
@@ -122,7 +129,7 @@ export const LoginComponent = ({
                     }
                 </div>
 
-                <button
+                <Button
                     className="loginButton"
                     onClick={
                         isLogin ? handleLogin : handleRegister
@@ -132,7 +139,7 @@ export const LoginComponent = ({
                     {
                         isLogin ? "Entrar" : "Cadastrar"
                     }
-                </button>
+                </Button>
 
                 <div>
                     {

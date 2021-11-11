@@ -9,11 +9,15 @@
 }
 
 .messageText{
-    padding: 10px;
+    padding: 8px;
     border-radius: 8px;
-    background-color: #534aca;
+    margin-left: 8px;
+    background-color: #303332;
     color: white;
     max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .message.own {
@@ -21,5 +25,11 @@
 }
 
 .message.own .messageText{
-    background-color: #4a81ca; 
+    background-color: #f09144;
+    margin-right: 8px;
+}
+
+.messageOwnName {
+    font-size: 12px;
+    font-weight: bold;
 }

@@ -2,10 +2,13 @@ const Mensagem = require('../models/mensagem.model');
 
 exports.sendMessage = async (req, res) => {
     try {
-        const { conversaId, destinatario, texto } = req.body;
+        const { 
+            conversaId, remetenteId, remetenteNome, texto 
+        } = req.body;
         const novaMensagem = await Mensagem.create({
             conversaId,
-            destinatario,
+            remetenteId,
+            remetenteNome,
             texto,
         });
 
@@ -13,8 +16,10 @@ exports.sendMessage = async (req, res) => {
             mensagem: {
                 id: novaMensagem.id,
                 conversaId,
-                destinatario,
-                texto
+                remetenteId,
+                remetenteNome,
+                texto,
+                create_at: novaMensagem.createAt
             },
         });
     } catch (error) {
@@ -24,12 +29,18 @@ exports.sendMessage = async (req, res) => {
     }
 }
 
-exports.getMessage = async (req, res) => {
+exports.getMessages = async (req, res) => {
     try {
         const { id } = req.params;
-        const mensagem = await Mensagem.findByPk(id);
+        const mensagens = await Mensagem.findAll({
+            where: { conversaId: id }
+        });
 
-        res.status(200).send(mensagem || {});
+        const mensagensOrdenadas = mensagens.sort((a,b) => {
+           return new Date(a.createdAt) - new Date(b.createdAt);
+        });
+
+        res.status(200).send(mensagensOrdenadas || {});
     } catch (error) {
         res.status(500).send({
             message: error.message
