@@ -42,7 +42,7 @@ const Messenger = () => {
     useEffect(() => {
         $socket.current.emit("addUser", userId);
         $socket.current.on("getUsers", users => {
-            setUsersOnline(users);
+            console.log(users);
         })
     }, [userId]);
 
@@ -54,7 +54,10 @@ const Messenger = () => {
     }, [messages]);
 
     const handleConnectChat = useCallback(() => {
-        setCurrentTalk();
+        setCurrentTalk({
+            id: "66f20585-7efc-4f1d-8742-8710a0272608",
+            destinatario: "d74e213a-47ba-49bf-94b5-d51ac94e518a",
+        });
     }, []);
 
     const onChangeInputChat = useCallback(event => {
