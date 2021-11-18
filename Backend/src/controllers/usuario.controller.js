@@ -1,6 +1,7 @@
 const { compareToHash } = require('../utils/hash');
 const jwt = require('jsonwebtoken');
 const Usuario = require('../models/usuario.model');
+const UsuarioSegueUsuario = require('../models/usuarioSegueUsuario.model');
 require('dotenv').config();
 
 exports.login = async (req, res) => {
