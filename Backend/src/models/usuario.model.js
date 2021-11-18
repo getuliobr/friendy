@@ -2,6 +2,8 @@ const Sequelize = require('sequelize');
 const database = require('./database');
 const { hash } = require('../utils/hash');
 
+const UsuarioSegueUsuario = require('./usuarioSegueUsuario.model');
+
 const Usuario = database.define('usuario', {
     id : {
       type : Sequelize.UUID,
@@ -41,5 +43,11 @@ const Usuario = database.define('usuario', {
     }
   },
 );
+
+Usuario.hasMany(UsuarioSegueUsuario, { foreignKey: 'segue', sourceKey: 'id', as: 'seguidores' });
+Usuario.hasMany(UsuarioSegueUsuario, { foreignKey: 'usuario', sourceKey: 'id', as: 'seguindos' });
+
+UsuarioSegueUsuario.hasMany(Usuario, { foreignKey: 'id', sourceKey: 'usuario', as: 'seguidor' });
+UsuarioSegueUsuario.hasMany(Usuario, { foreignKey: 'id', sourceKey: 'segue', as: 'seguindo' });
 
 module.exports = Usuario;

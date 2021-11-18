@@ -26,3 +26,12 @@ CREATE TABLE `mensagem`(
 	`created_at` DATETIME,
 	CONSTRAINT fk_conversaId FOREIGN KEY (conversa_id) REFERENCES conversa (id)
 );
+
+DROP TABLE IF EXISTS `usuario_segue_usuario`;
+CREATE TABLE `usuario_segue_usuario`(
+	`id` varchar(256) PRIMARY KEY,
+	`usuario` varchar(256) NOT NULL,
+	`segue` varchar(256) NOT NULL,
+	CONSTRAINT fk_usuario FOREIGN KEY (usuario) REFERENCES usuario (id) ON DELETE CASCADE,
+	CONSTRAINT fk_segue FOREIGN KEY (segue) REFERENCES usuario (id) ON DELETE CASCADE
+);
