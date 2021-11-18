@@ -68,7 +68,7 @@ exports.listarSeguidores = async (req, res) => {
       }],
     });
 
-    res.status(200).send(seguidores);
+    res.status(200).send({ seguidores });
   } catch (error) {
     res.status(500).send({
       message: error.message
@@ -79,7 +79,7 @@ exports.listarSeguidores = async (req, res) => {
 exports.listarSeguindo = async (req, res) => {
   try {
     const { id } = req.usuario;
-    const seguidores = await UsuarioSegueUsuario.findAll({
+    const seguindo = await UsuarioSegueUsuario.findAll({
       where: {
         usuario: id,
       },
@@ -89,7 +89,7 @@ exports.listarSeguindo = async (req, res) => {
       }],
     });
 
-    res.status(200).send(seguidores);
+    res.status(200).send({ seguindo });
   } catch (error) {
     res.status(500).send({
       message: error.message
