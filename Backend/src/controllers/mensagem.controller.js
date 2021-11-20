@@ -3,10 +3,11 @@ const Mensagem = require('../models/mensagem.model');
 exports.sendMessage = async (req, res) => {
     try {
         const { 
-            conversaId, remetenteId, remetenteNome, texto 
+            conversaId, destinatarioId, remetenteId, remetenteNome, texto 
         } = req.body;
         const novaMensagem = await Mensagem.create({
             conversaId,
+            destinatarioId,
             remetenteId,
             remetenteNome,
             texto,
@@ -16,6 +17,7 @@ exports.sendMessage = async (req, res) => {
             mensagem: {
                 id: novaMensagem.id,
                 conversaId,
+                destinatarioId,
                 remetenteId,
                 remetenteNome,
                 texto,
