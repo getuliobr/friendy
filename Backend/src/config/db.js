@@ -7,7 +7,7 @@ const env = {
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
   dialect: process.env.DB_DIALECT,
-  logging: true,
+  logging: console.log,
 };
 module.exports = env;
 
