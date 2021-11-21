@@ -14,6 +14,7 @@ const Messenger = () => {
     const [currentTalk, setCurrentTalk] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
+    const [arrivalMessage, setArrivalMessage] = useState("");
 
     const $scrollRef = useRef();
     const $socket = useRef();
@@ -33,7 +34,19 @@ const Messenger = () => {
 
     useEffect(() => {
         $socket.current = io("ws://localhost:8900");
+        $socket.current.on("getMessage", message => {
+            setArrivalMessage({
+                ...message,
+                createdAt: Date.now(),
+            });
+        });
     }, []);
+
+    useEffect(() => {
+        arrivalMessage &&
+            currentTalk?.destinatario &&
+            setMessages((prev) => [...prev, arrivalMessage]);
+    }, [arrivalMessage, currentTalk]);
 
     useDidMountAndUpdate(() => {
         getMessages();
@@ -44,6 +57,11 @@ const Messenger = () => {
         $socket.current.on("getUsers", users => {
             console.log(users);
         })
+        // $socket.current.on("disconnectedChat", isDisconnectedChat => {
+        //     if(isDisconnectedChat) {
+        //         setCurrentTalk(null);
+        //     }
+        // })
     }, [userId]);
 
 
@@ -53,12 +71,41 @@ const Messenger = () => {
         });
     }, [messages]);
 
-    const handleConnectChat = useCallback(() => {
-        setCurrentTalk({
-            id: "66f20585-7efc-4f1d-8742-8710a0272608",
-            destinatario: "d74e213a-47ba-49bf-94b5-d51ac94e518a",
-        });
-    }, []);
+    const handleConnectChat = async () => {
+        await Promise.all([
+            $socket.current.emit("checkConversationAvailable", userId),
+            $socket.current.on("getConversationAvailable", conversation => {
+                console.log('conversation', { conversation })
+                if (conversation) {
+                    setCurrentTalk({
+                        id: conversation.id,
+                        destinatario: conversation.remetente,
+                        rementente: conversation.destinatario,
+                    });
+                }
+            })
+        ]);
+
+        if (!currentTalk) {
+            await $socket.current.emit("checkReciveAvailable", userId);
+            await $socket.current.on("getReciver", async reciver => {
+                console.log({ reciver })
+                if (reciver) {
+                    const { data: { conversa } } = await axios.post(`http://localhost:3333/conversa/criar`, {
+                        destinatarioId: reciver,
+                        remetenteId: userId,
+                    });
+
+                    setCurrentTalk(conversa);
+                    $socket.current.emit("createRandomConversation", conversa);
+                    return;
+                } 
+                // else {
+                //     toast.info("No momento não temos um usuário disponível, tente mais tarde");
+                // }
+            })
+        }
+    };
 
     const onChangeInputChat = useCallback(event => {
         setNewMessage(event.target.value)
@@ -73,6 +120,8 @@ const Messenger = () => {
             remetenteNome: userName,
             texto: newMessage,
         };
+
+        await $socket.current.emit("sendMessage", valueSubmit);
 
         try {
             const { data } = await axios.post("http://localhost:3333/mensagem/enviar", valueSubmit);
@@ -95,6 +144,7 @@ const Messenger = () => {
                 <Message
                     message={message}
                     own={own}
+                    key={message.id}
                 />
             </div>
         )
@@ -131,7 +181,7 @@ const Messenger = () => {
 
         return (
             <div>
-                <Button 
+                <Button
                     onClick={handleConnectChat}
                 >
                     Conecte-se <FaHandsHelping />

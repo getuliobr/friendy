@@ -14,6 +14,11 @@ const Mensagem = database.define('mensagem', {
             allowNull: false,
             field: "conversa_id",
         },
+        destinatarioId: {
+            type: Sequelize.UUID,
+            allowNull: false,
+            field: "destinatario_id",
+        },
         remetenteId: {
             type: Sequelize.UUID,
             allowNull: false,

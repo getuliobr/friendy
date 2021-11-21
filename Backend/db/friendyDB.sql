@@ -19,6 +19,7 @@ CREATE TABLE `conversa`(
 DROP TABLE IF EXISTS `mensagem`;
 CREATE TABLE `mensagem`(
 	`id` varchar(256) PRIMARY KEY,
+	`destinatario_id` varchar(256) NOT NULL,
 	`remetente_id` varchar(256) NOT NULL,
 	`remetente_nome` varchar(256) NOT NULL,
   	`texto` varchar(256) NOT NULL,
