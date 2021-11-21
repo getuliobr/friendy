@@ -1,4 +1,4 @@
-import {createContext, useEffect, useState} from "react";
+import {createContext, useState} from "react";
 import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify'
 import axios from "axios";
@@ -26,6 +26,7 @@ export const UserProvider = ({children}) => {
             cookie.set("userName", nome);
             setUserToken(token);
             setUserName(nome);
+            setUserId(id);
         } catch (e) {
             toast.error("Erro ao logar.")
         }
@@ -42,6 +43,7 @@ export const UserProvider = ({children}) => {
             cookie.set("userName", nome);
             setUserToken(token);
             setUserName(nome);
+            setUserId(id);
         } catch (e) {
             toast.error("Erro ao cadastrar.")
         }
@@ -49,9 +51,11 @@ export const UserProvider = ({children}) => {
 
     const getFollowing = async () => {
         try {
-            await api.get("/seguindo", {
+            const following = await api.get("/seguindo", {
                 id: userId,
             })
+
+            return following.data.seguindo.map(user => user.seguindo[0])
         } catch (e) {
             toast.error("Ocorreu um erro ao buscar quem você segue.")
         }
