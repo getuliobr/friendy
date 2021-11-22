@@ -1,19 +1,30 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
+import { UserContext } from "../contexts/userContext";
 import "./../screens/LoginPage/index.css"
 
-export const LoginComponent = ({
-    username, setUsername,
-    password, setPassword,
-    passwordConfirmed, setPasswordConfirmed,
-    handleLogin, handleRegister, loading
-}) => {
+import { useNavigate } from "react-router-dom";
+
+export const LoginComponent = () => {
+    const { handleLogin, handleRegister, userToken } = useContext(UserContext);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (userToken) 
+            navigate("/home")
+    }, [userToken, navigate])
+
     const validateInputs = () => {
         if (isLogin)
             return username.length > 4 && password.length > 4
         else
             return username.length > 4 && password.length > 4 && password === passwordConfirmed
     }
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordConfirmed, setPasswordConfirmed] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const [isLogin, setIsLogin] = useState(true);
     const [onTouchedUsername, setOnTouchedUsername] = useState(false);
@@ -26,8 +37,8 @@ export const LoginComponent = ({
             <div className="loginContainer">
 
                 <h1>FRIENDY</h1>
-                
-                { loading ? (
+
+                {loading ? (
                     <div className="spinner">
                         <Spinner animation="border" role="status" />
                     </div>
@@ -131,8 +142,16 @@ export const LoginComponent = ({
 
                 <Button
                     className="loginButton"
-                    onClick={
-                        isLogin ? handleLogin : handleRegister
+                    onClick={async () => {
+                        setLoading(true)
+                        
+                        if (isLogin)
+                            await handleLogin(username, password)
+                        else
+                            await handleRegister(username, password)
+                        
+                        setLoading(false)
+                        }
                     }
                     disabled={!validateInputs()}
                 >
