@@ -9,6 +9,11 @@ const ChatPage = () => {
             <NavbarComponent />
             <div className="d-flex mt-3">
                 <div className="bg-light w-25 mx-2">
+                    <p
+                    style={{
+                        fontWeight:"bold"
+                    }}
+                    >LISTA DE USUÁRIOS SEGUIDOS</p>
                     <FriendListComponent />
                 </div>
                 <div className="bg-light w-75">

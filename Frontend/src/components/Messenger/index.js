@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Cookies from 'universal-cookie';
 import { Button, Form } from 'react-bootstrap';
 import { FaHandsHelping, FaTelegramPlane } from 'react-icons/fa';
@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import Message from './Message';
 import useDidMountAndUpdate from '../../hooks/use-did-mount-and-update';
 import './Messenger.css';
+import { UserContext } from '../../contexts/userContext';
 
 const Messenger = () => {
     const [currentTalk, setCurrentTalk] = useState(null);
@@ -19,6 +20,8 @@ const Messenger = () => {
     const [currentUserReceiverId, setCurrentUserReceiverId] = useState("")
     const [currentUserReciever, setcurrentUserReciever] = useState("");
     const [currentUserReceiverFollowed, setcurrentUserRecieverFollowed] = useState(false);
+
+    const { getFollowing } = useContext(UserContext);
 
     const $scrollRef = useRef();
     const $socket = useRef();
@@ -90,7 +93,7 @@ const Messenger = () => {
                 }
             })
         ]);
-
+        
         if (!currentTalk) {
             await $socket.current.emit("checkReciveAvailable", userId);
             await $socket.current.on("getReciver", async reciver => {
@@ -128,11 +131,6 @@ const Messenger = () => {
 
         await $socket.current.emit("sendMessage", valueSubmit);
 
-
-        getUserDest();
-        followedUser();
-
-
         try {
             const { data } = await axios.post("http://localhost:3333/mensagem/enviar", valueSubmit);
             setMessages([...messages, data.mensagem]);
@@ -161,9 +159,8 @@ const Messenger = () => {
     };
 
     const getUserDest = async () => {
-        
         let userDestId;
-        currentTalk.rementente == userId ? userDestId = currentTalk.destinatario: userDestId = currentTalk.rementente;
+        currentTalk.rementente === userId ? userDestId = currentTalk.destinatario: userDestId = currentTalk.rementente;
         const response = await axios.get(`http://localhost:3333/usuario/${userDestId}`, { headers: { Authorization: token } });
         setCurrentUserReceiverId(userDestId);
         setcurrentUserReciever(response.data.nome);
@@ -174,48 +171,33 @@ const Messenger = () => {
         var listaSeguidos = request.data.seguindo;
         // console.log(currentUserReciever);
         // console.log(listaSeguidos.some(item => item.segue == currentUserReceiverId));
-        setcurrentUserRecieverFollowed(listaSeguidos.some(item => item.segue == currentUserReceiverId))
+        setcurrentUserRecieverFollowed(listaSeguidos.some(item => item.segue === currentUserReceiverId))
     };
-
 
     const followUnfollow = async () =>{
         const data = {
             'id': currentUserReceiverId
         }
-        // const request = await axios.post(`http://localhost:3333/seguir`, data, { headers: { Authorization: token } });
+        const request = await axios.post(`http://localhost:3333/seguir`, data, { headers: { Authorization: token } });
         followedUser();
+        await getFollowing();
     }
-
-    const renderFollowButton = () => {
-        if(currentUserReceiverFollowed){
-            return(
-                <>
-                    <Button className='buttonUnfollow' onClick={followUnfollow}>Desseguir</Button>
-                </>
-            );
-        }
-        else{
-            return(
-                <>
-                    <Button className='buttonFollow' onClick={followUnfollow}>Seguir</Button>
-                </>
-            )
-        }
-    };
 
     const renderNavBar = () => {
         if(currentTalk){
+            getUserDest()
+            followedUser()
             return(
                 <>
                     <div className='navBarChat'>
                         <h3>{currentUserReciever}</h3>
-                        {renderFollowButton()}
+                        <Button className={ currentUserReceiverFollowed ? 'buttonUnfollow' : 'buttonFollow' } onClick={followUnfollow}>
+                        { currentUserReceiverFollowed ? 'Parar de seguir' : 'Seguir' }
+                        </Button>
                     </div>
                 </>
             )
         }
-
-        return(<></>)
     };
 
 
@@ -252,6 +234,9 @@ const Messenger = () => {
             <div>
                 <Button
                     onClick={handleConnectChat}
+                    style={{ 
+                    //     margin: "1em"
+                    }}
                 >
                     Conecte-se <FaHandsHelping />
                 </Button>

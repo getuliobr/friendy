@@ -9,6 +9,7 @@ export const UserProvider = ({children}) => {
     const [userName, setUserName] = useState(cookie.get("userName"));
     const [userToken, setUserToken] = useState(cookie.get("token"));
     const [userId, setUserId] = useState(cookie.get("userId"));
+    const [friendList, setFriendList] = useState([]);
 
     const api = axios.create({
         baseURL: "http://localhost:3333",
@@ -54,8 +55,7 @@ export const UserProvider = ({children}) => {
             const following = await api.get("/seguindo", {
                 id: userId,
             })
-
-            return following.data.seguindo.map(user => user.seguindo[0])
+            setFriendList(following.data.seguindo.map(user => user.seguindo[0]))
         } catch (e) {
             toast.error("Ocorreu um erro ao buscar quem você segue.")
         }
@@ -71,7 +71,7 @@ export const UserProvider = ({children}) => {
 
     return (
         <UserContext.Provider
-            value={{userName, userToken, handleLogin, handleRegister, logout, getFollowing}}
+            value={{userName, userToken, handleLogin, handleRegister, logout, getFollowing, friendList}}
         >
             {children}
         </UserContext.Provider>
