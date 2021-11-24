@@ -172,8 +172,8 @@ const Messenger = () => {
     const followedUser = async () => {
         const request = await axios.get(`http://localhost:3333/seguindo`, { headers: { Authorization: token } });
         var listaSeguidos = request.data.seguindo;
-        console.log(currentUserReciever);
-        console.log(listaSeguidos.some(item => item.segue == currentUserReceiverId));
+        // console.log(currentUserReciever);
+        // console.log(listaSeguidos.some(item => item.segue == currentUserReceiverId));
         setcurrentUserRecieverFollowed(listaSeguidos.some(item => item.segue == currentUserReceiverId))
     };
 
@@ -201,7 +201,22 @@ const Messenger = () => {
                 </>
             )
         }
-    }
+    };
+
+    const renderNavBar = () => {
+        if(currentTalk){
+            return(
+                <>
+                    <div className='navBarChat'>
+                        <h3>{currentUserReciever}</h3>
+                        {renderFollowButton()}
+                    </div>
+                </>
+            )
+        }
+
+        return(<></>)
+    };
 
 
     const renderMessages = () => {
@@ -247,10 +262,7 @@ const Messenger = () => {
 
     return (
         <div className="messenger">
-            <div className='navBarChat'>
-                <h3>{currentUserReciever}</h3>
-                {renderFollowButton()}
-            </div>
+            <div>{renderNavBar()}</div>
             <div className="chat">
                 <div className="chatWrapper">
                     {renderMessages()}
