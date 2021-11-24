@@ -15,8 +15,10 @@ const Messenger = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [arrivalMessage, setArrivalMessage] = useState("");
+
     const [currentUserReceiverId, setCurrentUserReceiverId] = useState("")
     const [currentUserReciever, setcurrentUserReciever] = useState("");
+    const [currentUserReceiverFollowed, setcurrentUserRecieverFollowed] = useState(false);
 
     const $scrollRef = useRef();
     const $socket = useRef();
@@ -125,8 +127,11 @@ const Messenger = () => {
         };
 
         await $socket.current.emit("sendMessage", valueSubmit);
+
+
         getUserDest();
         followedUser();
+
 
         try {
             const { data } = await axios.post("http://localhost:3333/mensagem/enviar", valueSubmit);
@@ -166,15 +171,36 @@ const Messenger = () => {
 
     const followedUser = async () => {
         const request = await axios.get(`http://localhost:3333/seguindo`, { headers: { Authorization: token } });
-        console.log(request);
+        var listaSeguidos = request.data.seguindo;
+        console.log(currentUserReciever);
+        console.log(listaSeguidos.some(item => item.segue == currentUserReceiverId));
+        setcurrentUserRecieverFollowed(listaSeguidos.some(item => item.segue == currentUserReceiverId))
     };
 
+
+    const followUnfollow = async () =>{
+        const data = {
+            'id': currentUserReceiverId
+        }
+        // const request = await axios.post(`http://localhost:3333/seguir`, data, { headers: { Authorization: token } });
+        followedUser();
+    }
+
     const renderFollowButton = () => {
-        return(
-            <>
-            <Button>Seguir</Button>
-            </>
-        );
+        if(currentUserReceiverFollowed){
+            return(
+                <>
+                    <Button className='buttonUnfollow' onClick={followUnfollow}>Desseguir</Button>
+                </>
+            );
+        }
+        else{
+            return(
+                <>
+                    <Button className='buttonFollow' onClick={followUnfollow}>Seguir</Button>
+                </>
+            )
+        }
     }
 
 
