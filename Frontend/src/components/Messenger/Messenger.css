@@ -5,6 +5,7 @@
 
 .chat {
     flex: 1;
+    align-self: flex-end;
 }
 
 .chatWrapper {
@@ -39,4 +40,28 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+}
+
+.buttonUnfollow{
+    background-color: rgb(148, 6, 6);
+    border-color: white;
+}
+
+.buttonUnfollow:hover{
+    background-color: rgb(180, 34, 34);
+    border-color: rgb(180, 34, 34);
+}
+
+.buttonFollow{
+    background-color: rgb(7, 167, 7);
+    border-color: white;
+}
+
+.buttonFollow:hover{
+    background-color: rgb(7, 167, 7);
+    border-color: rgb(7, 167, 7);
+}
+
+.navBarChat{
+    text-align: center;
 }

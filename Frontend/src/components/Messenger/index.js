@@ -16,12 +16,17 @@ const Messenger = () => {
     const [newMessage, setNewMessage] = useState("");
     const [arrivalMessage, setArrivalMessage] = useState("");
 
+    const [currentUserReceiverId, setCurrentUserReceiverId] = useState("")
+    const [currentUserReciever, setcurrentUserReciever] = useState("");
+    const [currentUserReceiverFollowed, setcurrentUserRecieverFollowed] = useState(false);
+
     const $scrollRef = useRef();
     const $socket = useRef();
 
     const cookie = new Cookies();
     const userId = cookie.get("userId");
     const userName = cookie.get("userName");
+    const token = cookie.get("token");
 
     const getMessages = async () => {
         try {
@@ -55,7 +60,7 @@ const Messenger = () => {
     useEffect(() => {
         $socket.current.emit("addUser", userId);
         $socket.current.on("getUsers", users => {
-            console.log(users);
+            // console.log(users);
         })
         // $socket.current.on("disconnectedChat", isDisconnectedChat => {
         //     if(isDisconnectedChat) {
@@ -75,7 +80,7 @@ const Messenger = () => {
         await Promise.all([
             $socket.current.emit("checkConversationAvailable", userId),
             $socket.current.on("getConversationAvailable", conversation => {
-                console.log('conversation', { conversation })
+                // console.log('conversation', { conversation })
                 if (conversation) {
                     setCurrentTalk({
                         id: conversation.id,
@@ -89,7 +94,7 @@ const Messenger = () => {
         if (!currentTalk) {
             await $socket.current.emit("checkReciveAvailable", userId);
             await $socket.current.on("getReciver", async reciver => {
-                console.log({ reciver })
+                // console.log({ reciver })
                 if (reciver) {
                     const { data: { conversa } } = await axios.post(`http://localhost:3333/conversa/criar`, {
                         destinatarioId: reciver,
@@ -123,6 +128,11 @@ const Messenger = () => {
 
         await $socket.current.emit("sendMessage", valueSubmit);
 
+
+        getUserDest();
+        followedUser();
+
+
         try {
             const { data } = await axios.post("http://localhost:3333/mensagem/enviar", valueSubmit);
             setMessages([...messages, data.mensagem]);
@@ -148,7 +158,66 @@ const Messenger = () => {
                 />
             </div>
         )
+    };
+
+    const getUserDest = async () => {
+        
+        let userDestId;
+        currentTalk.rementente == userId ? userDestId = currentTalk.destinatario: userDestId = currentTalk.rementente;
+        const response = await axios.get(`http://localhost:3333/usuario/${userDestId}`, { headers: { Authorization: token } });
+        setCurrentUserReceiverId(userDestId);
+        setcurrentUserReciever(response.data.nome);
+    };
+
+    const followedUser = async () => {
+        const request = await axios.get(`http://localhost:3333/seguindo`, { headers: { Authorization: token } });
+        var listaSeguidos = request.data.seguindo;
+        // console.log(currentUserReciever);
+        // console.log(listaSeguidos.some(item => item.segue == currentUserReceiverId));
+        setcurrentUserRecieverFollowed(listaSeguidos.some(item => item.segue == currentUserReceiverId))
+    };
+
+
+    const followUnfollow = async () =>{
+        const data = {
+            'id': currentUserReceiverId
+        }
+        // const request = await axios.post(`http://localhost:3333/seguir`, data, { headers: { Authorization: token } });
+        followedUser();
     }
+
+    const renderFollowButton = () => {
+        if(currentUserReceiverFollowed){
+            return(
+                <>
+                    <Button className='buttonUnfollow' onClick={followUnfollow}>Desseguir</Button>
+                </>
+            );
+        }
+        else{
+            return(
+                <>
+                    <Button className='buttonFollow' onClick={followUnfollow}>Seguir</Button>
+                </>
+            )
+        }
+    };
+
+    const renderNavBar = () => {
+        if(currentTalk){
+            return(
+                <>
+                    <div className='navBarChat'>
+                        <h3>{currentUserReciever}</h3>
+                        {renderFollowButton()}
+                    </div>
+                </>
+            )
+        }
+
+        return(<></>)
+    };
+
 
     const renderMessages = () => {
         if (currentTalk) {
@@ -188,12 +257,12 @@ const Messenger = () => {
                 </Button>
             </div>
         )
-    }
-
+    };
 
 
     return (
         <div className="messenger">
+            <div>{renderNavBar()}</div>
             <div className="chat">
                 <div className="chatWrapper">
                     {renderMessages()}
