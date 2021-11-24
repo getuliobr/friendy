@@ -5,6 +5,7 @@
 
 .chat {
     flex: 1;
+    align-self: flex-end;
 }
 
 .chatWrapper {
