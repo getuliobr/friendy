@@ -16,7 +16,6 @@ module.exports = async (req, res, next) => {
     req.usuario = usuario;
     next();
   } catch (error) {
-    console.log(error);
     return res.status(401).json({
       message: 'Sua autenticação falhou!'
     });

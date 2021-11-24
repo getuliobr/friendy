@@ -110,6 +110,8 @@ describe('Testes login usuário', () => {
 
 describe('Testes listar usuários', () => {
   let usuariosCriados = [];
+  let authorization;
+
   beforeAll(async () => {
     await Usuario.destroy({ where: {} });
     const promises = [];
@@ -122,11 +124,41 @@ describe('Testes listar usuários', () => {
       );
     };
     usuariosCriados = await Promise.all(promises);
+
+    await request(app)
+      .post('/usuario/login')
+      .send({
+        nome: 'friendy1',
+        senha: '123456',
+      })
+      .then((res) => {
+        authorization = res.body.token;
+      });
+
+  });
+
+  test('Não deve listar usuários sem estar logado', async () => {
+    await request(app)
+      .get('/usuario')
+      .expect(401)
+  });
+
+  test('Não deve ser possivel buscar os dados de um usuário pelo o ID sem estar logado', async () => {
+    const promises = [];
+    for(const usuarioDB of usuariosCriados) {
+      promises.push(
+        request(app)
+          .get(`/usuario/${usuarioDB.id}`)
+          .expect(401)
+      );
+    };
+    await Promise.all(promises);
   });
 
   test('Deve retornar todos os usuários cadastrados', async () => {
     await request(app)
       .get('/usuario')
+      .set('Authorization', authorization)
       .expect(200)
       .expect('Content-Type', /json/)
       .then((res) => {
@@ -145,6 +177,7 @@ describe('Testes listar usuários', () => {
       promises.push(
         request(app)
           .get(`/usuario/${usuarioDB.id}`)
+          .set('Authorization', authorization)
           .expect(200)
           .expect('Content-Type', /json/)
           .then((res) => {
@@ -159,82 +192,85 @@ describe('Testes listar usuários', () => {
   });
 });
 
-test('Não deve criar uma conversa sem destinatario', async () => {
-  await request(app)
-    .post('/conversa/criar')
-    .send({
-      remetente: 'a69sd49f84as98d4f98a4sd9fas',
-    })
-    .expect(500);
-});
 
-test('Não deve criar uma conversa sem remetente', async () => {
-  await request(app)
-    .post('/conversa/criar')
-    .send({
-      destinatario: 'a9s8d4f98as4d98f4sa',
-    })
-    .expect(500);
-});
+describe('Testes das mensagens', () => {
+  test('Não deve criar uma conversa sem destinatario', async () => {
+    await request(app)
+      .post('/conversa/criar')
+      .send({
+        remetente: 'a69sd49f84as98d4f98a4sd9fas',
+      })
+      .expect(500);
+  });
 
-test('Não se deve pegar uma conversa de um id que não existe', async () => {
-  await request(app)
-    .get('/conversa/id')
-    .send({
-      id: 'df89g49df84g98df4gd',
-    })
-    .expect(500);
-});
+  test('Não deve criar uma conversa sem remetente', async () => {
+    await request(app)
+      .post('/conversa/criar')
+      .send({
+        destinatario: 'a9s8d4f98as4d98f4sa',
+      })
+      .expect(500);
+  });
 
-test('Não deve criar uma mensagem sem o id de sua conversa', async () => {
-  await request(app)
-    .post('/mensagem/enviar')
-    .send({
-      remetenteId: 'a9s8d4f98as4d98f4sa',
-      remetenteNome: 'Cleiton',
-      text: "Teste teste",
-    })
-    .expect(500);
-});
+  test('Não se deve pegar uma conversa de um id que não existe', async () => {
+    await request(app)
+      .get('/conversa/id')
+      .send({
+        id: 'df89g49df84g98df4gd',
+      })
+      .expect(404);
+  });
 
-test('Não deve criar uma mensagem sem o id do remetente', async () => {
-  await request(app)
-    .post('/mensagem/enviar')
-    .send({
-      conversaId: 'a9s8d4f98as4d98f4sa',
-      remetenteNome: 'Cleiton',
-      text: "Teste teste",
-    })
-    .expect(500);
-});
+  test('Não deve criar uma mensagem sem o id de sua conversa', async () => {
+    await request(app)
+      .post('/mensagem/enviar')
+      .send({
+        remetenteId: 'a9s8d4f98as4d98f4sa',
+        remetenteNome: 'Cleiton',
+        text: "Teste teste",
+      })
+      .expect(500);
+  });
 
-test('Não deve criar uma mensagem sem o nome do remetente', async () => {
-  await request(app)
-    .post('/mensagem/enviar')
-    .send({
-      conversaId: 'a9s8d4f98as4d98f4sa',
-      remetenteId: 'a9s8d4f98as4d98f4sa',
-      text: "Teste teste",
-    })
-    .expect(500);
-});
+  test('Não deve criar uma mensagem sem o id do remetente', async () => {
+    await request(app)
+      .post('/mensagem/enviar')
+      .send({
+        conversaId: 'a9s8d4f98as4d98f4sa',
+        remetenteNome: 'Cleiton',
+        text: "Teste teste",
+      })
+      .expect(500);
+  });
 
-test('Não deve criar uma mensagem sem o texto', async () => {
-  await request(app)
-    .post('/mensagem/enviar')
-    .send({
-      conversaId: 'a9s8d4f98as4d98f4sa',
-      remetenteId: 'a9s8d4f98as4d98f4sa',
-      remetenteNome: 'Cleiton',
-    })
-    .expect(500);
-});
+  test('Não deve criar uma mensagem sem o nome do remetente', async () => {
+    await request(app)
+      .post('/mensagem/enviar')
+      .send({
+        conversaId: 'a9s8d4f98as4d98f4sa',
+        remetenteId: 'a9s8d4f98as4d98f4sa',
+        text: "Teste teste",
+      })
+      .expect(500);
+  });
 
-test('Não deve ser possivel pegar mensagens de uma id de uma conversa que não existe', async () => {
-  await request(app)
-    .get('/mensagem/enviar')
-    .send({
-      id: 'a9a8sd489f49a8sd48f9as498fa'
-    })
-    .expect(500);
+  test('Não deve criar uma mensagem sem o texto', async () => {
+    await request(app)
+      .post('/mensagem/enviar')
+      .send({
+        conversaId: 'a9s8d4f98as4d98f4sa',
+        remetenteId: 'a9s8d4f98as4d98f4sa',
+        remetenteNome: 'Cleiton',
+      })
+      .expect(500);
+  });
+
+  test('Não deve ser possivel pegar mensagens de uma id de uma conversa que não existe', async () => {
+    await request(app)
+      .get('/mensagem/enviar')
+      .send({
+        id: 'a9a8sd489f49a8sd48f9as498fa'
+      })
+      .expect(404);
+  });
 });
