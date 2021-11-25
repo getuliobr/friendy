@@ -2,14 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../contexts/userContext";
 
 const FriendListComponent = () => {
-    const [friendList, setFriendList] = useState([])
-    const { getFollowing } = useContext(UserContext);
+    const { getFollowing, friendList } = useContext(UserContext);
 
     useEffect(() => {
         (async () => {
-            setFriendList(await getFollowing())
+            await getFollowing()
         })()
-    }, [getFollowing])
+    }, [])
 
     return (
         <div>
