@@ -3,8 +3,7 @@
 Friendy é uma plataforma de rede social para interação social através de bate papos aleatórios.
 ## Principais Requisitos ( Funcionalidades )
 * Criação de bate papos (Aleatório e com amigo)
-* Amizade entre usuários
-* Filtro com TAG para os bate papos
+* Relação Seguir entre usuários
 * Gerenciamento de arquivos enviados pelos usuários
 * Perfil de usuários e lista de amigos
 ## Dependências
