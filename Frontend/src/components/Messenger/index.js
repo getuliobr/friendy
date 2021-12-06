@@ -83,12 +83,12 @@ const Messenger = () => {
         await Promise.all([
             $socket.current.emit("checkConversationAvailable", userId),
             $socket.current.on("getConversationAvailable", conversation => {
-                // console.log('conversation', { conversation })
                 if (conversation) {
+                    const reciver = conversation.destinatario != userId ? conversation.destinatario : conversation.remetente;
                     setCurrentTalk({
                         id: conversation.id,
-                        destinatario: conversation.remetente,
-                        rementente: conversation.destinatario,
+                        destinatario: reciver,
+                        rementente: userId,
                     });
                 }
             })
