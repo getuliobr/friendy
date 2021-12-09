@@ -192,7 +192,6 @@ describe('Testes listar usuários', () => {
   });
 });
 
-
 describe('Testes das mensagens', () => {
   test('Não deve criar uma conversa sem destinatario', async () => {
     await request(app)
@@ -272,5 +271,84 @@ describe('Testes das mensagens', () => {
         id: 'a9a8sd489f49a8sd48f9as498fa'
       })
       .expect(404);
+  });
+});
+
+describe('Teste seguidor', () => {
+  let usuariosCriados = [];
+  let authorization;
+
+  beforeAll(async () => {
+    await Usuario.destroy({ where: {} });
+    const promises = [];
+    for(let i = 0; i < 2; i++) {
+      promises.push(
+        Usuario.create({
+          nome: `friendy${i}`,
+          senha: '123456',
+        })
+      );
+    };
+    usuariosCriados = await Promise.all(promises);
+
+    await request(app)
+      .post('/usuario/login')
+      .send({
+        nome: usuariosCriados[0].nome,
+        senha: '123456',
+      })
+      .then((res) => {
+        authorization = res.body.token;
+      });
+  });
+
+  test('Não deve ser possivel seguir um usuário que não existe', async () => {
+    await request(app)
+      .post('/seguir')
+      .set('Authorization', authorization)
+      .send({
+        id: 'a9s8d4f98as4d98f4sa',
+      })
+      .expect(404);
+  });
+
+  test('Não deve ser possivel se seguir', async () => {
+    await request(app)
+      .post('/seguir')
+      .set('Authorization', authorization)
+      .send({
+        id: usuariosCriados[0].id,
+      })
+      .expect(400);
+  });
+
+  test('Deve ser possivel seguir um usuario que não é si mesmo', async () => {
+    await request(app)
+      .post('/seguir')
+      .set('Authorization', authorization)
+      .send({
+        id: usuariosCriados[1].id,
+      })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then((res) => {
+        const { message } = res.body;
+        expect(message).toBe(`Agora você segue ${usuariosCriados[1].nome}`);
+      });
+  });
+
+  test('Deve ser possivel parar de seguir um usuario', async () => {
+    await request(app)
+      .post('/seguir')
+      .set('Authorization', authorization)
+      .send({
+        id: usuariosCriados[1].id,
+      })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then((res) => {
+        const { message } = res.body;
+        expect(message).toBe(`Você parou de seguir ${usuariosCriados[1].nome} com sucesso`);
+      });
   });
 });

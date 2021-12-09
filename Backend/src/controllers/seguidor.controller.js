@@ -21,7 +21,7 @@ exports.seguirDeseguir = async (req, res) => {
     });
 
     if(!seguir) {
-      return res.status(400).send({
+      return res.status(404).send({
         message: 'Usuário não encontrado'
       });
     }
