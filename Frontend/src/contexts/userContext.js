@@ -69,9 +69,18 @@ export const UserProvider = ({children}) => {
         setUserName(undefined);
     }
 
+    const fetchProfile = async (userid) => {
+        try {
+            const profile = await api.get(`localhost/3000/${userid}`)
+            return profile.data    
+        } catch(e) {
+            toast.error("Erro ao carregar perfil de usuário.")
+        }
+    }
+
     return (
         <UserContext.Provider
-            value={{userName, userToken, handleLogin, handleRegister, logout, getFollowing, friendList}}
+            value={{userName, userToken, userId, handleLogin, handleRegister, logout, getFollowing, friendList, fetchProfile}}
         >
             {children}
         </UserContext.Provider>

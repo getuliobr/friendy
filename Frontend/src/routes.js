@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from './screens/LoginPage';
 import ChatPage from './screens/ChatPage';
 import { UserContext } from './contexts/userContext';
+import UserProfile from './screens/UserProfile';
 
 function RequireAuth({ children }) {
     const { userToken } = useContext(UserContext);
@@ -38,6 +39,14 @@ const AllRoutes = () => (
             path="*"
             element={<RedirectInvalidRoute/>}
         />    
+        <Route
+            path="/profile/:userid"
+            element={
+            <RequireAuth>
+                <UserProfile />
+            </RequireAuth>
+            }
+        />
     </Routes>
 )
 
