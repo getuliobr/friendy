@@ -352,3 +352,48 @@ describe('Teste seguidor', () => {
       });
   });
 });
+
+describe('Teste de atualizar usuário', () => {
+  let usuarioCriado;
+  let authorization;
+
+  beforeAll(async () => {
+    await Usuario.destroy({ where: {} });
+    usuarioCriado = await Usuario.create({
+      nome: 'friendy',
+      senha: '123456',
+    });
+
+    await request(app)
+      .post('/usuario/login')
+      .send({
+        nome: 'friendy',
+        senha: '123456',
+      })
+      .then((res) => {
+        authorization = res.body.token;
+      });
+  });
+
+  test('Deve ser possivel atualizar os campos instagram, facebook e descricao do usuario', async () => {
+
+    const dadosParaAtualizar = {
+      instagram: '@friendy',
+      facebook: 'friendyfacebook',
+      descricao: 'friendy descricao',
+    };
+
+    await request(app)
+      .patch('/usuario/atualizar')
+      .set('Authorization', authorization)
+      .send(dadosParaAtualizar)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then((res) => {
+        const { instagram, facebook, descricao } = res.body;
+        expect(instagram).toBe(dadosParaAtualizar.instagram);
+        expect(facebook).toBe(dadosParaAtualizar.facebook);
+        expect(descricao).toBe(dadosParaAtualizar.descricao);
+      });
+  });
+});
