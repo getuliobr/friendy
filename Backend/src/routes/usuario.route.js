@@ -6,6 +6,8 @@ module.exports = (app) => {
   app.post('/usuario/login', Usuario.login);
   // Cria usuario
   app.post('/usuario/cadastrar', Usuario.create);
+  // Atualiza usuario
+  app.patch('/usuario/atualizar', UserMiddleware, Usuario.update);
   // Procura Usuario
   app.get('/usuario/:id', UserMiddleware, Usuario.findByID);
   // Procura Usuarios

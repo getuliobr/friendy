@@ -118,3 +118,22 @@ exports.findAll = async (req, res) => {
     });
   }
 };
+
+exports.update = async (req, res) => {
+  try {
+    const { usuario } = req;
+    const { descricao, facebook, instagram } = req.body;
+
+    const usuarioAtualizado = await usuario.update({
+      descricao,
+      facebook,
+      instagram
+    });
+
+    res.status(200).send(usuarioAtualizado);
+  } catch (error) {
+    res.status(500).send({
+      message: error.message
+    });
+  }
+}
