@@ -23,11 +23,39 @@ const Usuario = database.define('usuario', {
       allowNull : false,
       field : "senha",
     },
+    senha : {
+      type : Sequelize.STRING,
+      allowNull : false,
+      field : "senha",
+    },
+    descricao : {
+      type : Sequelize.STRING,
+      allowNull : true,
+      field : "descricao",
+    },
+    instagram : {
+      type : Sequelize.STRING,
+      allowNull : true,
+      field : "instagram",
+    },
+    facebook : {
+      type : Sequelize.STRING,
+      allowNull : true,
+      field : "facebook",
+    },
+    createdAt: {
+      defaultValue: Sequelize.NOW,
+      type: Sequelize.DATE,
+      allowNull: true,
+      field: 'created_at',
+    },
   },
   {
     tableName: 'usuario',
-    timestamps: false,
-    createdAt: false,
+    timestamps: true,
+    createdAt: true,
+    updatedAt: false,
+    deletedAt: false,
     defaultScope: {
       attributes: { exclude: ['senha'] },
     },
