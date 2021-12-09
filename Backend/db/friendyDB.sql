@@ -6,7 +6,11 @@ DROP TABLE IF EXISTS `usuario`;
 CREATE TABLE `usuario`(
 	`id` varchar(256) PRIMARY KEY,
 	`nome` varchar(64) UNIQUE NOT NULL,
-  `senha` varchar(60) NOT NULL
+  `senha` varchar(60) NOT NULL,
+	`descricao` varchar(256),
+	`facebook` varchar(256),
+	`instagram` varchar(256),
+	`created_at` DATETIME
 );
 
 DROP TABLE IF EXISTS `conversa`;
