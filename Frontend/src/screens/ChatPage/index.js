@@ -13,6 +13,7 @@ const ChatPage = () => {
                     style={{
                         fontWeight:"bold"
                     }}
+                    className="m-2"
                     >LISTA DE USUÁRIOS SEGUIDOS</p>
                     <FriendListComponent />
                 </div>

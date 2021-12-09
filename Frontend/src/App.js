@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import Routes from './routes';
 
+import './assets/fontawesome/css/all.min.css'
+
 import { Login } from './screens/LoginPage';
 
 function App() {
