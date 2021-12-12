@@ -71,8 +71,8 @@ export const UserProvider = ({children}) => {
 
     const fetchProfile = async (userid) => {
         try {
-            const profile = await api.get(`localhost/3000/${userid}`)
-            return profile.data    
+            const { data } = await axios.get(`http://localhost:3333/usuario/${userid}`,  { headers: { Authorization: userToken } });
+            return data;
         } catch(e) {
             toast.error("Erro ao carregar perfil de usuário.")
         }
